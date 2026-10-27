@@ -111,6 +111,11 @@ Merge that pull request after this `mce-2.6` branch contains the five assisted i
 - **Decision**: `mce-2.6` is added to the art-tools ACM tenant scan pipeline, immediately before `mce-2.8` (version order): `art-cluster/pipelines/config/argocd/project/art-acm-tenant/18_pipeline-schedule-layered-products-scan.yaml`.
 - **Rationale**: That scheduled-scan job is the source of truth for which ACM and MCE groups `schedule-layered-products-scan` runs. `aos-cd-jobs` `nonOCPGroups` / `LPClusterGroups` no longer drives this automation. An earlier branch on `smithbw88/aos-cd-jobs` (`HYPBLD-880`) added `mce-2.6` there; do not merge that pull request.
 
+## Stage release plan
+
+- **Decision**: Add ReleasePlan `mce-advisory-stage-auto-2-6` for application `mce-2-6`, admitting through `mce-advisory-stage-2-6`. Map `(2, 6)` to that plan in art-tools `fbc_stage_release_plans`.
+- **Rationale**: `olm-bundle-konflux` stage-releases related images only when that map has an entry. Without it the bundle build succeeds and logs `No stage release plan configured for product 'multicluster-engine' (2.6)`, so the `mce-2-6` application gets no Release. MCE 2.8 uses `mce-advisory-stage-auto-2-8` the same way.
+
 ## Tide branch inclusion (openshift/release)
 
 - **Decision**: Add `mce-2.6` to `tide.queries[].includedBranches`. String sort places it after `mce-2.17` and before `mce-2.8`. The commit is signed with `git commit -S`. DCO `Signed-off-by` is a different check.
