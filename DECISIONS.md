@@ -118,7 +118,16 @@ Merge that pull request after this `mce-2.6` branch contains the five assisted i
 
 ## Tide branch inclusion (openshift/release)
 
-- **Decision**: Add `mce-2.6` to `tide.queries[].includedBranches`. String sort places it after `mce-2.17` and before `mce-2.8`. The commit is signed with `git commit -S`. DCO `Signed-off-by` is a different check.
+- **Decision**: Add `mce-2.6` to `tide.queries[].includedBranches`. String sort places it after `mce-2.17` and before `mce-2.8`. DCO `Signed-off-by` is a different check and was not used on this commit.
+- **Signing**: `git commit -S` failed. The GPG key requires a passphrase and pinentry had no terminal. The commit was signed with the GitHub SSH key `~/.ssh/id_rsa` (`git -c gpg.format=ssh -c user.signingkey=$HOME/.ssh/id_rsa commit -S`). The signature verified for `briansmi@redhat.com`.
+
+## Implementation details recorded after the first scaffold
+
+- Hypershift CLI (`release-4.16` `Containerfile.cli`) builds with `rhel-9-golang-1.24`. Its last stage is `ubi9/nginx-124`. The ART config keeps `from.member: base-rhel9`, matching live MCE 2.8, rather than switching the final parent to nginx.
+- The four ubi8 assisted images use distgit `rhaos-4.16-rhel-8`. Those brew branches were not confirmed to exist when the configs were written.
+- `assisted-service-9` keeps `rhocp-4.17-rhel9-rpms` because its rhel9 stage still `dnf install`s `openshift-clients`. The ubi8 controller uses `rhocp-4.16-rhel8-rpms` instead. `assisted-image-service` and `assisted-installer` have no `enabled_repos` because their Dockerfiles have no active `dnf install`.
+- Stage advisory repository URLs use `registry.stage.redhat.io`. Prod uses `registry.redhat.io`. Replacing the prod host string does not update the stage file.
+- Hive keeps the `ARG CONTAINER_SUB_MANAGER_OFF=0` → `1` modification. Its Dockerfile default base is `ubi-minimal-pqc`; the member is still non-PQC `base-rhel9`.
 
 ## Tool patch report (art-migration branch-setup mce 2.8 2.6)
 
